@@ -1,0 +1,111 @@
+#!/opt/local/bin/perl -w
+use LWP::Simple;
+use utf8;
+use open ':encoding(utf8)';
+use CGI qw(:standard);
+use strict;
+use warnings ;
+use Encode;
+use URI::Escape;
+use IPC::Run3;
+
+my $isocat_source_file = "";
+
+binmode(STDOUT, ":utf8");
+
+my $query = new CGI;
+my $isocat_url = $query->param('url');
+
+if ($isocat_url =~ /^http/) {
+  unless (defined ($isocat_source_file = get $isocat_url)) {
+    die "$isocat_url niet bereikbaar\n";
+  }
+} 
+
+my ($cmd_out, $cmd_err);
+my $cmd_input = $isocat_source_file;
+run3([ 'java', '-jar', 'Isocat-extend-SKOS.jar'], \$cmd_input, \$cmd_out, \$cmd_err);
+
+my $content = Encode::decode('utf8', uri_unescape($cmd_out));
+
+# add prefixes to properties (all skos properties covered)
+$content =~ s/<datcat/<dcr:datcat/g;
+$content =~ s/<source/<dcterms:source/g;
+$content =~ s/<title/<dcterms:title/g;
+$content =~ s/<description/<dcterms:description/g;
+$content =~ s/<hasTopConcept/<skos:hasTopConcept/g;
+$content =~ s/<topConceptOf/<skos:topConceptOf/g;
+$content =~ s/<member/<skos:member/g;
+$content =~ s/<prefLabel/<skos:prefLabel/g;
+$content =~ s/<altLabel/<skos:altLabel/g;
+$content =~ s/<hiddenLabel/<skos:hiddenLabel/g;
+$content =~ s/<notation/<skos:notation/g;
+$content =~ s/<note/<skos:note/g;
+$content =~ s/<changeNote/<skos:changeNote/g;
+$content =~ s/<definition/<skos:definition/g;
+$content =~ s/<example/<skos:example/g;
+$content =~ s/<scopeNote/<skos:scopeNote/g;
+$content =~ s/<editorialNote/<skos:editorialNote/g;
+$content =~ s/<historyNote/<skos:historyNote/g;
+$content =~ s/<inScheme/<skos:inScheme/g;
+$content =~ s/<broader/<skos:broader/g;
+$content =~ s/<narrower/<skos:narrower/g;
+$content =~ s/<related/<skos:related/g;
+$content =~ s/<broaderTransitive/<skos:broaderTransitive/g;
+$content =~ s/<narrowerTransitive/<skos:narrowerTransitive/g;
+$content =~ s/<broadMatch/<skos:broadMatch/g;
+$content =~ s/<closeMatch/<skos:closeMatch/g;
+$content =~ s/<exactMatch/<skos:exactMatch/g;
+$content =~ s/<narrowMatch/<skos:narrowMatch/g;
+$content =~ s/<relatedMatch/<skos:relatedMatch/g;
+$content =~ s/<mappingRelation/<skos:mappingRelation/g;
+
+# add prefixes to all end tags
+$content =~ s/<\/datcat/<\/dcr:datcat/g;
+$content =~ s/<\/source/<\/dcterms:source/g;
+$content =~ s/<\/title/<\/dcterms:title/g;
+$content =~ s/<\/description/<\/dcterms:description/g;
+$content =~ s/<\/hasTopConcept/<\/skos:hasTopConcept/g;
+$content =~ s/<\/topConceptOf/<\/skos:topConceptOf/g;
+$content =~ s/<\/member/<\/skos:member/g;
+$content =~ s/<\/prefLabel/<\/skos:prefLabel/g;
+$content =~ s/<\/altLabel/<\/skos:altLabel/g;
+$content =~ s/<\/hiddenLabel/<\/skos:hiddenLabel/g;
+$content =~ s/<\/notation/<\/skos:notation/g;
+$content =~ s/<\/note/<\/skos:note/g;
+$content =~ s/<\/changeNote/<\/skos:changeNote/g;
+$content =~ s/<\/definition/<\/skos:definition/g;
+$content =~ s/<\/example/<\/skos:example/g;
+$content =~ s/<\/scopeNote/<\/skos:scopeNote/g;
+$content =~ s/<\/editorialNote/<\/skos:editorialNote/g;
+$content =~ s/<\/historyNote/<\/skos:historyNote/g;
+$content =~ s/<\/inScheme/<\/skos:inScheme/g;
+$content =~ s/<\/broader/<\/skos:broader/g;
+$content =~ s/<\/narrower/<\/skos:narrower/g;
+$content =~ s/<\/related/<\/skos:related/g;
+$content =~ s/<\/broaderTransitive/<\/skos:broaderTransitive/g;
+$content =~ s/<\/narrowerTransitive/<\/skos:narrowerTransitive/g;
+$content =~ s/<\/broadMatch/<\/skos:broadMatch/g;
+$content =~ s/<\/closeMatch/<\/skos:closeMatch/g;
+$content =~ s/<\/exactMatch/<\/skos:exactMatch/g;
+$content =~ s/<\/narrowMatch/<\/skos:narrowMatch/g;
+$content =~ s/<\/relatedMatch/<\/skos:relatedMatch/g;
+$content =~ s/<\/mappingRelation/<\/skos:mappingRelation/g;
+
+# remove inline namespace declarations
+$content =~ s/ xmlns="http:\/\/www.w3.org\/2004\/02\/skos\/core#"//g;
+$content =~ s/ xmlns="http:\/\/www.isocat.org\/ns\/dcr.rdf#"//g;
+$content =~ s/ xmlns="http:\/\/purl.org\/dc\/terms\/"//g;
+$content =~ s/ xmlns="http:\/\/purl.org\/dc\/elements\/1.1\/"//g;
+
+# add prefix definitions to RDF header
+$content =~ s/rdf-syntax-ns#">/rdf-syntax-ns#" 
+	xmlns:owl="http:\/\/www.w3.org\/2002\/07\/owl#" 
+	xmlns:rdfs="http:\/\/www.w3.org\/2000\/01\/rdf-schema#" 
+	xmlns:dc="http:\/\/purl.org\/dc\/elements\/1.1\/" 
+	xmlns:dcterms="http:\/\/purl.org\/dc\/terms\/" 
+        xmlns:dcr="http:\/\/www.isocat.org\/ns\/dcr.rdf#"
+	xmlns:skos="http:\/\/www.w3.org\/2004\/02\/skos\/core#">/;
+
+print $query->header("application/rdf+xml");
+print($content);

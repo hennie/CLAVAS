@@ -1,0 +1,190 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>SKOSConverter</title>
+
+        <link rel="stylesheet" type="text/css" href="jquery-ui-1.10.2.custom/css/redmond/jquery-ui-1.10.2.custom.css" />
+        <style>
+            body{
+                font: 62.5% "Trebuchet MS", sans-serif;
+                margin: 50px;
+            }
+
+            .bar {
+                height: 18px;
+                background: green;
+            }
+        </style>
+
+        <script src="jquery-1.9.1.js" type="text/javascript"></script>
+        <!--script src="jquery.form.js" type="text/javascript"></script-->
+        <script src="jquery-ui-1.10.2.custom/js/jquery-ui-1.10.2.custom.js" type="text/javascript"></script>
+
+        <!--script src="jQuery-File-Upload/js/vendor/jquery.ui.widget.js" type="text/javascript"></script>
+        <script src="jQuery-File-Upload/js/jquery.iframe-transport.js" type="text/javascript"></script>
+        <script src="jQuery-File-Upload/js/jquery.fileupload.js" type="text/javascript"></script-->
+
+        <script src="custom.js" type="text/javascript"></script>       
+
+    </head>
+    <body>
+
+        <div id="tabs">
+            <ul>
+                <li><a href="#tabs-1">ISO-639-3</a></li>
+                <li><a href="#tabs-2">ISOcat</a></li>
+                <li><a href="#tabs-3">Organisation Names</a></li>
+                <!--li><a href="#tabs-4">SKOS processing</a></li-->
+            </ul>
+            <div id="tabs-1">
+
+                <p>The ISO 639 family of standards contains codes for the representation of names of languages. The ISO 639-3 sub standard attempts to provide as complete an enumeration of languages as possible, including living, extinct, ancient, and constructed languages, whether major or minor, written or unwritten. SIL International is the official Registration Authority for ISO-639-3.</p>
+                <p>This page can be used to retrieve the most recent version of ISO-639-3 from SIL and convert it to SKOS. The generated SKOS is suited for uploading to the OpenSKOS platform.</p>
+
+                <p>Current download locations: </p>
+
+                <div id="langcode-dialog" title="Change download locations">
+                    <table id="myTable"> 
+                        <tbody> 
+                            <tr> 
+                                <td>Code set</td> 
+                                <td>
+                                    <input id="cs-input" 
+                                           value="http://www-01.sil.org/iso639-3/iso-639-3_20130123.tab"
+                                           size="70"/>
+                                </td> 
+                            </tr> 
+                            <tr> 
+                                <td>Language names index</td> 
+                                <td>
+                                    <input id="lni-input" 
+                                           value="http://www-01.sil.org/iso639-3/iso-639-3_Name_Index_20130123.tab"
+                                           size="70"/>
+                                </td> 
+                            </tr> 
+                            <tr> 
+                                <td>Macrolanguage mappings</td> 
+                                <td>
+                                    <input id="mlm-input" 
+                                           value="http://www-01.sil.org/iso639-3/iso-639-3-macrolanguages_20130314.tab"
+                                           size="70"/>
+                                </td>
+                            </tr> 
+                        </tbody> 
+                    </table> 	
+                </div>
+
+                <button id="langcode-dialog-button">Change download locations...</button>
+
+                <div id="table">
+                    <table id="myLangcodeTable"> 
+                        <tbody> 
+                            <tr> 
+                                <td>Code set</td> 
+                                <td id="cs-value">http://www-01.sil.org/iso639-3/iso-639-3_20130123.tab</td> 
+                            </tr> 
+                            <tr> 
+                                <td>Language names index</td> 
+                                <td id="lni-value">http://www-01.sil.org/iso639-3/iso-639-3_Name_Index_20130123.tab</td> 
+                            </tr> 
+                            <tr> 
+                                <td>Macrolanguage mappings</td> 
+                                <td id="mlm-value">http://www-01.sil.org/iso639-3/iso-639-3-macrolanguages_20130314.tab</td> 
+                            </tr> 
+                        </tbody> 
+                    </table> 
+                </div>
+
+                <p>Download the latest version of ISO-639-3 from SIL and generate SKOS RDF/XML file
+                    <button id="button3">Download SKOS</button></p>	
+            </div>
+
+            <div id="tabs-2">
+                <p>This text describes ISOcat, what subset is retrieved, and the conversion process.</p>
+                <p>ISOcat (www.isocat.org) is a registry for Data Categories. ISO 12620 data category specifications in the DCR contain linguistic descriptions, such as data category definitions, statements of associated value domains, and examples.
+                   The ISOcat DCR provides data export of a subset that is relevant for OpenSKOS: in this export you find only closed and simple DCs from the metadata profile. A closed DC maps to a concept scheme and a simple DC to a SKOSconcept in such a concept scheme.
+
+                </p>
+
+                <p>Current download location at the DCR:</p> 
+
+                <div id="isocat-dialog" title="Change download location">
+                    <table id="myIsocatTable"> 
+                        <tbody> 
+                            <tr> 
+                                <td>ISOcat SKOS location</td> 
+                                <td>
+                                    <input id="isocat-input" 
+                                           value="http://www.isocat.org/rest/profile/5.clavas"
+                                           size="70"/>
+                                </td> 
+                            </tr> 
+                        </tbody> 
+                    </table> 	
+                </div>
+
+                <div id="isocat-table">
+                    <table id="my-IsoTable"> 
+                        <tbody> 
+                            <tr> 
+                                <td>ISOcat SKOS location</td> 
+                                <td id="isocat-value">http://www.isocat.org/rest/profile/5.clavas</td> 
+                            </tr> 
+                        </tbody> 
+                    </table> 
+                </div>
+
+                <button id="isocat-dialog-button">Change download location...</button>
+
+                <p>Download the latest version of ISOcat public data categories and process the SKOS RDF/XML data
+                    <button id="button4">Download SKOS</button></p>	
+
+                <div id="skosdata"></div>
+            </div>
+
+            <div id="tabs-3">
+                <p>The CLARIN VLO Organizations vocabulary is constructed on basis of manual curation of organization names extracted from the CLARIN VLO (http://www.clarin.eu/vlo). The original vocabulary is the starting point of manual curation directly in OpenSKOS. Periodic updates from external authoritive sources are therefore irrelevant. For completeness and as documentation the source code of the original converter/SKOS generation module is made available via GitHub: XXXXXXXX.</p>
+
+            </div>
+
+            <!--div id="tabs-4">
+                <p>Separate modules to make SKOS variants compliant with OpenSKOS</p>
+                <p><input type="checkbox"/>Add skos:hasTopConcept properties</p>
+                <p><input type="checkbox"/>Explicit rdf:type properties</p>
+                <p><input type="checkbox"/>Namespaces as prefixes in RDF header</p>
+
+                <p>Select a local SKOS file and upload for processing</p>
+
+                <!--form id="skos-upload" action="/cgi-bin/isocat.rdf" method="post" enctype="multipart/form-data">
+                    <input type="file" id="skos-upload-file" name="skos-upload-file"/>
+                    <input type="submit" value="Process SKOS" />
+
+                    <div id="results"></div>
+                </form--> 
+
+                <!--input id="fileupload" type="file" name="files[]" data-url="http://localhost/~hennieb/cgi-bin/upload.pl" />
+
+                <div id="progress">
+                    <div class="bar" style="width: 0%;"></div>
+                </div-->
+
+                <!--form name="openskos_uploadform" id="openskos_uploadform" enctype="multipart/form-data" action="handle_skos.php" method="post">
+                    <div style="margin-bottom:10px;">
+                        <input type="checkbox" name="add_skos_hastopconcept" id="add_skos_hastopconcept" value="1" /><label for="add_skos_hastopconcept">Add skos:hastTopConcept properties</label><br />
+                        <input type="checkbox" name="explicit_rdf_type" id="explicit_rdf_type" /><label for="explicit_rdf_type" value="1">Explicit rdf:type properties</label><br />
+                        <input type="checkbox" name="namespaces_as_prefixes" id="namespaces_as_prefixes" /><label for="namespaces_as_prefixes" value="1">Namespaces as prefixes in RDF header</label>
+                    </div>
+                    <p>Select a local SKOS file and upload for processing</p>
+                    <div style="margin-bottom:10px;">
+                        <input type="file" name="openskos_file" id="openskos_file" />
+                    </div>
+                    <div>
+                        <input type="submit" name="submit" value="Process" />
+                    </div>
+                </form>
+            </div-->
+        </div>
+
+    </body>
+</html>
